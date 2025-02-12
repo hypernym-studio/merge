@@ -16,9 +16,9 @@ import type { MergeRecord, MergeOptions, Merge } from './types'
  */
 export function merge<T extends MergeRecord[], O extends MergeOptions>(
   sources: [...T],
-  options?: O,
+  options?: O & MergeOptions,
 ): Merge<T, O> {
-  const { skip } = options || {}
+  const { rules } = options || {}
 
   return sources.reduce((prev: MergeRecord, curr: MergeRecord) => {
     if (prev && curr) {
@@ -26,18 +26,19 @@ export function merge<T extends MergeRecord[], O extends MergeOptions>(
         if (['__proto__', 'constructor', 'prototype'].includes(key)) return
 
         if (isArray(prev[key]) && isArray(curr[key])) {
-          prev[key] = skip?.includes('array')
-            ? curr[key]
-            : [...prev[key], ...curr[key]]
+          prev[key] =
+            rules?.array === 'override'
+              ? curr[key]
+              : [...prev[key], ...curr[key]]
         } else if (isObject(prev[key]) && isObject(curr[key])) {
           prev[key] = merge([prev[key], curr[key]], options)
         } else {
           prev[key] = isUndefined(curr[key])
-            ? skip?.includes('undefined')
+            ? rules?.undefined === 'skip'
               ? prev[key]
               : curr[key]
             : isNull(curr[key])
-              ? skip?.includes('null')
+              ? rules?.null === 'skip'
                 ? prev[key]
                 : curr[key]
               : curr[key]
