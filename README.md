@@ -56,7 +56,122 @@ npm install @hypernym/merge
 ```ts
 import { merge } from '@hypernym/merge'
 
-const obj = merge([a, b, c])
+const A = {
+  a: true,
+  b: {
+    c: {
+      d: [1, 2, 3],
+    },
+    e: {
+      f: true,
+    },
+  },
+}
+
+const B = {
+  a: 'merge',
+  b: {
+    c: {
+      d: ['4', '5', '6'],
+    },
+    e: {
+      f: {
+        g: 33,
+      },
+    },
+    h: [23, 33],
+  },
+}
+
+const C = {
+  i: {
+    j: 77,
+    k: 99,
+  },
+}
+
+const D = {
+  i: {
+    j: undefined,
+    k: null,
+  },
+}
+
+const result = merge([A, B, C, D])
+
+const resultRules = merge([A, B, C, D], {
+  rules: { array: 'override', undefined: 'skip', null: 'skip' },
+})
+```
+
+**Output: result**
+
+```ts
+// Merged Result
+{
+  a: 'merge',
+  b: {
+    c: { d: [ 1, 2, 3, '4', '5', '6' ] },
+    e: { f: { g: 33 } },
+    h: [ 23, 33 ]
+  },
+  i: { j: undefined, k: null }
+}
+```
+
+```ts
+// Automatically Infered Types
+{
+  a: string
+  b: {
+    c: {
+      d: (string | number)[]
+    }
+    e: {
+      f: {
+        g: number
+      }
+    }
+    h: number[]
+  }
+  i: {
+    j: undefined
+    k: null
+  }
+}
+```
+
+**Output: resultRules**
+
+```ts
+// Merged Result With Custom Rules
+{
+  a: 'merge',
+  b: { c: { d: [ '4', '5', '6' ] }, e: { f: { g: 33 } }, h: [ 23, 33 ] },
+  i: { j: 77, k: 99 }
+}
+```
+
+```ts
+// Automatically Infered Types
+{
+  a: string
+  b: {
+    c: {
+      d: string[]
+    }
+    e: {
+      f: {
+        g: number
+      }
+    }
+    h: number[]
+  }
+  i: {
+    j: number
+    k: number
+  }
+}
 ```
 
 ## API
@@ -92,10 +207,25 @@ merge([{ a: 1 }, { a: null }], { rules: { null: 'skip' } }) // => { a: 1 }
 ```ts
 import type { Merge } from '@hypernym/merge'
 
-type A = { a?: string }
-type B = { b: string }
+Merge<sources, options>
+```
 
-type Result = Merge<[A, B], { rules: { undefined: 'skip' } }> // => { a: string, b: string }
+#### sources
+
+- Type: `object[]`
+- Required: `true`
+
+```ts
+Merge<[{ a: number }, { b: number }, { c: number }]> // => { a: number, b: number, c: number }
+```
+
+#### options
+
+- Type: `object`
+- Default: `undefined`
+
+```ts
+Merge<[{ a: number }, { a: null }], { rules: { null: 'skip' } }> // => { a: number }
 ```
 
 ## Options
@@ -116,15 +246,15 @@ Defines how merging behaves for the specified types.
 
 Specifies the merge strategy for `array` types.
 
-- `combine` — combines all values from all sources into a final result.
-- `override` — value from the last source overrides the others in the final result.
+- `combine` — Combines all values from all sources into a final result, meaning that the right sources will merge the properties with the left sources and combine their values.
+- `override` — Value from the last source overrides the others in the final result, meaning that the right sources will merge the properties with the left sources and overwrite their values.
 
 ```ts
-const a = { a: [1, 2] }
-const b = { a: [3, 4] }
+const A = { a: [1, 2] }
+const B = { a: [3, 4] }
 
-const o1 = merge([a, b], { rules: { array: 'combine' } }) // => { a: [1, 2, 3, 4] }
-const o2 = merge([a, b], { rules: { array: 'override' } }) // => { a: [3, 4] }
+const resultCombine = merge([A, B], { rules: { array: 'combine' } }) // => { a: [1, 2, 3, 4] }
+const resultOverride = merge([A, B], { rules: { array: 'override' } }) // => { a: [3, 4] }
 ```
 
 #### undefined
@@ -134,15 +264,15 @@ const o2 = merge([a, b], { rules: { array: 'override' } }) // => { a: [3, 4] }
 
 Specifies the merge strategy for the `undefined` type.
 
-- `override` — explicitly defined value from the last source overrides the others in the final result.
-- `skip` — skips the explicitly defined value from the last source and uses the defined one if any.
+- `override` — Explicitly defined value from the last source overrides the others in the final result.
+- `skip` — Skips the explicitly defined value from the last source and uses the defined one.
 
 ```ts
-const a = { a: 'hello' }
-const b = { a: undefined }
+const A = { a: 'hello' }
+const B = { a: undefined }
 
-const o1 = merge([a, b], { rules: { undefined: 'override' } }) // => { a: undefined }
-const o2 = merge([a, b], { rules: { undefined: 'skip' } }) // => { a: 'hello' }
+const resultOverride = merge([A, B], { rules: { undefined: 'override' } }) // => { a: undefined }
+const resultSkip = merge([A, B], { rules: { undefined: 'skip' } }) // => { a: 'hello' }
 ```
 
 #### null
@@ -152,15 +282,15 @@ const o2 = merge([a, b], { rules: { undefined: 'skip' } }) // => { a: 'hello' }
 
 Specifies the merge strategy for the `null` type.
 
-- `override` — explicitly defined value from the last source overrides the others in the final result.
-- `skip` — skips the explicitly defined value from the last source and uses the defined one if any.
+- `override` — Explicitly defined value from the last source overrides the others in the final result.
+- `skip` — Skips the explicitly defined value from the last source and uses the defined one.
 
 ```ts
-const a = { a: 'hello' }
-const b = { a: null }
+const A = { a: 'hello' }
+const B = { a: null }
 
-const o1 = merge([a, b], { rules: { null: 'override' } }) // => { a: null }
-const o2 = merge([a, b], { rules: { null: 'skip' } }) // => { a: 'hello' }
+const resultOverride = merge([A, B], { rules: { null: 'override' } }) // => { a: null }
+const resultSkip = merge([A, B], { rules: { null: 'skip' } }) // => { a: 'hello' }
 ```
 
 ## Community
