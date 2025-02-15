@@ -71,21 +71,14 @@ export type MergeValue<
       ? LastSource<T, K>
       : MergeArray<AllSources<T, K>>[] | Exclude<AllSources<T, K>, any[]>
 
-export type MergeTypes<
+export type Merge<
   T extends MergeRecord[],
   O extends MergeOptions = MergeOptions,
 > = {
   [K in MergeAllKeys<T>]: Exclude<MergeValue<T, K, O>, SkipRules<O>>
-}
-
-export type MergeExpand<T> = T extends infer U
+} extends infer U
   ? { [K in keyof U]: U[K] }
   : never
-
-export type Merge<
-  T extends MergeRecord[],
-  O extends MergeOptions = MergeOptions,
-> = MergeExpand<MergeTypes<T, O>>
 
 export interface MergeRules {
   /**
