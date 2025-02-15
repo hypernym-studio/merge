@@ -102,7 +102,7 @@ export interface MergeRules {
    * Specifies the merge strategy for the `undefined` type.
    *
    * - `override` — Explicitly defined value from the last source overrides the others in the final result.
-   * - `skip` — Skips the explicitly defined value from the last source and uses the defined one if any.
+   * - `skip` — Skips the explicitly defined value from the last source and uses the defined one.
    *
    * @example
    *
@@ -117,7 +117,7 @@ export interface MergeRules {
    * Specifies the merge strategy for the `null` type.
    *
    * - `override` — Explicitly defined value from the last source overrides the others in the final result.
-   * - `skip` — Skips the explicitly defined value from the last source and uses the defined one if any.
+   * - `skip` — Skips the explicitly defined value from the last source and uses the defined one.
    *
    * @example
    *
