@@ -21,8 +21,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0(@types/node@22.13.4)(typescript@5.7.3)
       '@hypernym/utils':
-        specifier: ^3.4.1
-        version: 3.4.1(@types/node@22.13.4)(typescript@5.7.3)
+        specifier: ^3.4.2
+        version: 3.4.2(@types/node@22.13.4)(typescript@5.7.3)
       '@types/node':
         specifier: ^22.13.4
         version: 22.13.4
@@ -484,8 +484,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@hypernym/utils@3.4.1':
-    resolution: {integrity: sha512-6YimoJUKxve/ysgL133fTZc2P+O8PqdbEeiuFiJQKVz4I8lRFJSP2JFM8wFm7ZBR8AL/v6CzNDPEV4Gnyle0kw==}
+  '@hypernym/utils@3.4.2':
+    resolution: {integrity: sha512-webQih3/c6QChT+qV6BEprFS2dMggEbaUerpVJ0+AvtGA87ThiiMq8Q9LN00LrB0rJZVbVx1OgYVOJ7nSnvBYQ==}
     engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       '@types/node': '>=20.0.0'
@@ -1563,7 +1563,7 @@ snapshots:
     dependencies:
       '@hypernym/args': 0.3.0
       '@hypernym/colors': 1.0.2(@types/node@22.13.4)(typescript@5.7.3)
-      '@hypernym/utils': 3.4.1(@types/node@22.13.4)(typescript@5.7.3)
+      '@hypernym/utils': 3.4.2(@types/node@22.13.4)(typescript@5.7.3)
       '@rollup/plugin-alias': 5.1.1(rollup@4.34.6)
       '@rollup/plugin-json': 6.1.0(rollup@4.34.6)
       '@rollup/plugin-node-resolve': 16.0.0(rollup@4.34.6)
@@ -1605,7 +1605,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.13.4
 
-  '@hypernym/utils@3.4.1(@types/node@22.13.4)(typescript@5.7.3)':
+  '@hypernym/utils@3.4.2(@types/node@22.13.4)(typescript@5.7.3)':
     optionalDependencies:
       '@types/node': 22.13.4
       typescript: 5.7.3
