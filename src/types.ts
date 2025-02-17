@@ -28,15 +28,32 @@ type LastValue<
   T extends MergeRecord[],
   K extends PropertyKey,
   O extends MergeOptions,
-> = T extends [...infer R extends MergeRecord[], infer L extends MergeRecord]
+> = T extends [...infer R, infer L]
   ? L extends MergeRecord
     ? K extends keyof L
       ? Exclude<L[K], SkipRules<O>> extends never
-        ? LastValue<R, K, O>
+        ? LastValue<R extends MergeRecord[] ? R : [], K, O>
         : Exclude<L[K], SkipRules<O>>
-      : LastValue<R, K, O>
-    : never
+      : LastValue<R extends MergeRecord[] ? R : [], K, O>
+    : LastValue<R extends MergeRecord[] ? R : [], K, O>
   : never
+
+type ArrayValue<
+  T extends MergeRecord[],
+  K extends PropertyKey,
+  O extends MergeOptions,
+> = O['rules'] extends { array: 'override' }
+  ? LastSource<T, K>
+  :
+      | MergeArray<Extract<AllSources<T, K>, any[]>>[]
+      | Exclude<LastSource<T, K>, any[]>
+
+type BuildTuple<L extends number, T extends any[] = []> = T['length'] extends L
+  ? T
+  : BuildTuple<L, [...T, any]>
+
+type Decrement<N extends number> =
+  BuildTuple<N> extends [any, ...infer R] ? R['length'] : never
 
 export type MergeFn = (...a: any[]) => any
 export type MergePrimitives =
@@ -51,7 +68,7 @@ export type MergePrimitives =
 export type MergeRecord = Record<PropertyKey, any>
 
 export type MergeAllKeys<T extends any[]> = T extends [infer K, ...infer R]
-  ? keyof K | MergeAllKeys<R>
+  ? keyof K | MergeAllKeys<R extends any[] ? R : []>
   : never
 
 export type MergeArray<T> = T extends any[] ? T[number] : never
@@ -60,25 +77,43 @@ export type MergeValue<
   T extends MergeRecord[],
   K extends PropertyKey,
   O extends MergeOptions,
-> =
-  Extract<LastSource<T, K>, any[]> extends never
-    ? LastSource<T, K> extends MergePrimitives
-      ? LastValue<T, K, O>
-      : AllSources<T, K> extends MergeRecord
-        ? Merge<ExtractValue<T, K>, O>
-        : LastValue<T, K, O>
-    : O['rules'] extends { array: 'override' }
-      ? LastSource<T, K>
-      : MergeArray<AllSources<T, K>>[] | Exclude<AllSources<T, K>, any[]>
+> = O['depth'] extends 0
+  ? LastSource<T, K> extends any[]
+    ? ArrayValue<T, K, O>
+    : LastSource<T, K> extends MergeRecord
+      ? unknown
+      : LastSource<T, K>
+  : Extract<LastSource<T, K>, any[]> extends never
+    ? Extract<AllSources<T, K>, any[]> extends never
+      ? LastSource<T, K> extends MergePrimitives
+        ? LastValue<T, K, O>
+        : Exclude<AllSources<T, K>, SkipRules<O>> extends MergeRecord
+          ? MergeTypes<
+              ExtractValue<T, K>,
+              {
+                rules: O['rules']
+                depth: Decrement<O['depth'] extends number ? O['depth'] : 6>
+              }
+            >
+          : LastValue<T, K, O>
+      : LastValue<T, K, O>
+    : ArrayValue<T, K, O>
+
+export type MergeExpand<T> = T extends infer U
+  ? { [K in keyof U]: U[K] }
+  : never
+
+export type MergeTypes<
+  T extends MergeRecord[],
+  O extends MergeOptions = MergeOptions,
+> = MergeExpand<{
+  [K in MergeAllKeys<T>]: Exclude<MergeValue<T, K, O>, SkipRules<O>>
+}>
 
 export type Merge<
   T extends MergeRecord[],
   O extends MergeOptions = MergeOptions,
-> = {
-  [K in MergeAllKeys<T>]: Exclude<MergeValue<T, K, O>, SkipRules<O>>
-} extends infer U
-  ? { [K in keyof U]: U[K] }
-  : never
+> = MergeTypes<T, O>
 
 export interface MergeRules {
   /**
@@ -143,6 +178,22 @@ export interface MergeOptions {
    * @default undefined
    */
   rules?: MergeRules
+  /**
+   * Specifies the maximum recursion depth when merging nested objects.
+   *
+   * The depth counter is a safeguard that limits recursion, improving compiler performance, and prevents possible infinite type instantiation issues during type-checking.
+   *
+   * In most cases, you won't need to change this.
+   *
+   * @example
+   *
+   * ```ts
+   * merge([{}], { depth: 9 })
+   * ```
+   *
+   * @default 6
+   */
+  depth?: number
 }
 
 export * from './'
