@@ -36,6 +36,62 @@ describe('Merge Types', () => {
     expectTypeOf<Result>().toEqualTypeOf<B>()
   })
 
+  test('should deeply override values correctly', () => {
+    type A = {
+      o: {
+        o: {
+          a: string
+          b: number
+          c?: boolean
+          d: bigint
+          e?: symbol
+          f: Date
+          g: () => void
+          h?: boolean[]
+          i: {
+            j: string
+            k: boolean
+            l: number
+          }
+        }
+      }
+    }
+
+    type B = {
+      o: {
+        o: {
+          a: boolean
+          b?: string
+          c: number
+          d: Date
+          e?: () => void
+          f?: symbol
+          g: bigint
+          h: object
+          i?: string[]
+        }
+      }
+    }
+
+    type Result = Merge<[A, B]>
+
+    expectTypeOf<Result>().toEqualTypeOf<{
+      o: {
+        o: {
+          a: boolean
+          b: string | undefined
+          c: number
+          d: Date
+          e: (() => void) | undefined
+          f: symbol | undefined
+          g: bigint
+          h: object
+          i: string[] | undefined
+        }
+      }
+    }>()
+  })
+
   test('should handle undefined and null correctly', () => {
     type A = {
       a?: string
@@ -152,6 +208,94 @@ describe('Merge Types', () => {
       c: boolean[]
       d: (object | Date)[]
       e: symbol[]
+    }>()
+  })
+
+  test('should deeply handle arrays correctly', () => {
+    type A = {
+      o: {
+        o: {
+          a?: string[]
+          b: (number | null | undefined)[]
+          c: undefined[]
+          d: null[]
+          e?: boolean[]
+        }
+      }
+    }
+
+    type B = {
+      o: {
+        o: {
+          a?: (number | boolean)[]
+          b?: string[]
+          c?: boolean[]
+          d: (object | Date)[]
+          e?: symbol[]
+        }
+      }
+    }
+
+    type ResultCombine = Merge<[A, B], { rules: { array: 'combine' } }>
+
+    expectTypeOf<ResultCombine>().toEqualTypeOf<{
+      o: {
+        o: {
+          a: (string | number | boolean)[] | undefined
+          b: (string | number | null | undefined)[] | undefined
+          c: (boolean | undefined)[] | undefined
+          d: (object | Date | null)[]
+          e: (boolean | symbol)[] | undefined
+        }
+      }
+    }>()
+
+    type ResultCombineSkip = Merge<
+      [A, B],
+      { rules: { array: 'combine'; undefined: 'skip'; null: 'skip' } }
+    >
+
+    expectTypeOf<ResultCombineSkip>().toEqualTypeOf<{
+      o: {
+        o: {
+          a: (string | number | boolean)[]
+          b: (string | number | null | undefined)[]
+          c: (boolean | undefined)[]
+          d: (object | Date | null)[]
+          e: (boolean | symbol)[]
+        }
+      }
+    }>()
+
+    type ResultOverride = Merge<[A, B], { rules: { array: 'override' } }>
+
+    expectTypeOf<ResultOverride>().toEqualTypeOf<{
+      o: {
+        o: {
+          a: (number | boolean)[] | undefined
+          b: string[] | undefined
+          c: boolean[] | undefined
+          d: (object | Date)[]
+          e: symbol[] | undefined
+        }
+      }
+    }>()
+
+    type ResultOverrideSkip = Merge<
+      [A, B],
+      { rules: { array: 'override'; undefined: 'skip'; null: 'skip' } }
+    >
+
+    expectTypeOf<ResultOverrideSkip>().toEqualTypeOf<{
+      o: {
+        o: {
+          a: (number | boolean)[]
+          b: string[]
+          c: boolean[]
+          d: (object | Date)[]
+          e: symbol[]
+        }
+      }
     }>()
   })
 
