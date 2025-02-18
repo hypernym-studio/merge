@@ -1,5 +1,5 @@
 import { isObject, isArray, isUndefined, isNull } from '@hypernym/utils'
-import type { MergeRecord, MergeOptions, Merge } from './types'
+import type { MergeSource, MergeOptions, Merge } from './types'
 
 /**
  * Type-safe deep merge utility.
@@ -18,13 +18,13 @@ import type { MergeRecord, MergeOptions, Merge } from './types'
  *
  * @see [Repository](https://github.com/hypernym-studio/merge)
  */
-export function merge<T extends MergeRecord[], O extends MergeOptions>(
+export function merge<T extends MergeSource[], O extends MergeOptions>(
   sources: [...T],
   options?: O & MergeOptions & { depth?: O['depth'] },
 ): Merge<T, O> {
   const { rules, depth = 6 } = options || {}
 
-  return sources.reduce((prev: MergeRecord, curr: MergeRecord) => {
+  return sources.reduce((prev: MergeSource, curr: MergeSource) => {
     if (prev && curr) {
       Object.keys(curr).forEach((key) => {
         if (['__proto__', 'constructor', 'prototype'].includes(key)) return

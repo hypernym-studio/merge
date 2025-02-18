@@ -11,9 +11,9 @@ type LastSource<T extends any[], K extends PropertyKey> = T extends [
     : LastSource<R, K>
   : never
 
-type ExtractValue<T extends MergeRecord[], K extends PropertyKey> = T extends [
-  infer F extends MergeRecord,
-  ...infer R extends MergeRecord[],
+type ExtractValue<T extends MergeSource[], K extends PropertyKey> = T extends [
+  infer F extends MergeSource,
+  ...infer R extends MergeSource[],
 ]
   ? K extends keyof F
     ? [F[K], ...ExtractValue<R, K>]
@@ -25,21 +25,19 @@ type SkipRules<O extends MergeOptions> =
   | (O['rules'] extends { null: 'skip' } ? null : never)
 
 type LastValue<
-  T extends MergeRecord[],
+  T extends MergeSource[],
   K extends PropertyKey,
   O extends MergeOptions,
 > = T extends [...infer R, infer L]
-  ? L extends MergeRecord
-    ? K extends keyof L
-      ? Exclude<L[K], SkipRules<O>> extends never
-        ? LastValue<R extends MergeRecord[] ? R : [], K, O>
-        : Exclude<L[K], SkipRules<O>>
-      : LastValue<R extends MergeRecord[] ? R : [], K, O>
-    : LastValue<R extends MergeRecord[] ? R : [], K, O>
+  ? K extends keyof L
+    ? Exclude<L[K], SkipRules<O>> extends never
+      ? LastValue<R extends MergeSource[] ? R : [], K, O>
+      : Exclude<L[K], SkipRules<O>>
+    : LastValue<R extends MergeSource[] ? R : [], K, O>
   : never
 
 type ArrayValue<
-  T extends MergeRecord[],
+  T extends MergeSource[],
   K extends PropertyKey,
   O extends MergeOptions,
 > = O['rules'] extends { array: 'override' }
@@ -67,6 +65,8 @@ export type MergePrimitives =
 
 export type MergeRecord = Record<PropertyKey, any>
 
+export type MergeSource = MergeRecord | undefined
+
 export type MergeAllKeys<T extends any[]> = T extends [infer K, ...infer R]
   ? keyof K | MergeAllKeys<R extends any[] ? R : []>
   : never
@@ -74,7 +74,7 @@ export type MergeAllKeys<T extends any[]> = T extends [infer K, ...infer R]
 export type MergeArray<T> = T extends any[] ? T[number] : never
 
 export type MergeValue<
-  T extends MergeRecord[],
+  T extends MergeSource[],
   K extends PropertyKey,
   O extends MergeOptions,
 > = O['depth'] extends 0
@@ -104,14 +104,14 @@ export type MergeExpand<T> = T extends infer U
   : never
 
 export type MergeTypes<
-  T extends MergeRecord[],
+  T extends MergeSource[],
   O extends MergeOptions = MergeOptions,
 > = MergeExpand<{
   [K in MergeAllKeys<T>]: Exclude<MergeValue<T, K, O>, SkipRules<O>>
 }>
 
 export type Merge<
-  T extends MergeRecord[],
+  T extends MergeSource[],
   O extends MergeOptions = MergeOptions,
 > = MergeTypes<T, O>
 
