@@ -28,7 +28,7 @@
 - API-Friendly
 
 <blockquote>
-  <sub><strong>Package size</strong>: <code>~500 B</code> minified, <code>~360 B</code> gzip</sub>
+  <sub><strong>Package size</strong>: <code>~560 B</code> minified, <code>~370 B</code> gzip</sub>
 </blockquote>
 
 ## Core Concepts
@@ -36,6 +36,7 @@
 - **Deep-merge**: Recursively combines multiple objects into a unified result.
 - **Type-safe**: Automatically infers types from all specified sources.
 - **Merge Rules**: Offers precise control over merging strategies.
+- **Depth Limit**: Provides maximum recursion depth when merging nested objects.
 
 ## Installation
 
@@ -102,6 +103,8 @@ const result = merge([A, B, C, D])
 const resultRules = merge([A, B, C, D], {
   rules: { array: 'override', undefined: 'skip', null: 'skip' },
 })
+
+const resultDepth = merge([A, B, C, D], { depth: 1 })
 ```
 
 **Output: result**
@@ -111,11 +114,11 @@ const resultRules = merge([A, B, C, D], {
 {
   a: 'merge',
   b: {
-    c: { d: [ 1, 2, 3, '4', '5', '6' ] },
+    c: { d: [1, 2, 3, '4', '5', '6'] },
     e: { f: { g: 33 } },
-    h: [ 23, 33 ]
+    h: [23, 33],
   },
-  i: { j: undefined, k: null }
+  i: { j: undefined, k: null },
 }
 ```
 
@@ -147,8 +150,8 @@ const resultRules = merge([A, B, C, D], {
 // Merged Result With Custom Rules
 {
   a: 'merge',
-  b: { c: { d: [ '4', '5', '6' ] }, e: { f: { g: 33 } }, h: [ 23, 33 ] },
-  i: { j: 77, k: 99 }
+  b: { c: { d: ['4', '5', '6'] }, e: { f: { g: 33 } }, h: [23, 33] },
+  i: { j: 77, k: 99 },
 }
 ```
 
@@ -170,6 +173,33 @@ const resultRules = merge([A, B, C, D], {
   i: {
     j: number
     k: number
+  }
+}
+```
+
+**Output: resultDepth**
+
+```ts
+// Merged Result With Custom Depth
+{
+  a: 'merge',
+  b: { c: {}, e: {}, h: [23, 33] },
+  i: { j: undefined, k: null },
+}
+```
+
+```ts
+// Automatically Infered Types
+{
+  a: string
+  b: {
+    c: unknown
+    e: unknown
+    h: number[]
+  }
+  i: {
+    j: undefined
+    k: null
   }
 }
 ```
@@ -291,6 +321,21 @@ const B = { a: null }
 
 const resultOverride = merge([A, B], { rules: { null: 'override' } }) // => { a: null }
 const resultSkip = merge([A, B], { rules: { null: 'skip' } }) // => { a: 'hello' }
+```
+
+### depth
+
+- Type: `number`
+- Default: `6`
+
+Specifies the maximum recursion depth when merging nested objects.
+
+The depth counter is a safeguard that limits recursion, improving compiler performance, and prevents possible infinite type instantiation issues during type-checking.
+
+In most cases, you won't need to change this.
+
+```ts
+const resultDepth = merge([A, B], { depth: 3 })
 ```
 
 ## Community

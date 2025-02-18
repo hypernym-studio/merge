@@ -48,5 +48,8 @@ const resultRules = merge([A, B, C, D], {
   rules: { array: 'override', undefined: 'skip', null: 'skip' },
 })
 
+const resultDepth = merge([A, B, C, D], { depth: 1 })
+
 console.log('result:', inspect(result, { depth: 3, colors: true }))
 console.log('resultRules:', inspect(resultRules, { depth: 3, colors: true }))
+console.log('resultDepth:', inspect(resultDepth, { depth: 3, colors: true }))
