@@ -1,6 +1,6 @@
 {
   "name": "@hypernym/merge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Hypernym Studio",
   "description": "Type-safe deep merge utility.",
   "license": "MIT",
