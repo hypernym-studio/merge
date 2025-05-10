@@ -1,4 +1,4 @@
-<h1 align="center">Merge</h1>
+<h1 align="center">@hypernym/merge</h1>
 
 <p align="center">Type-safe deep merge utility.</p>
 
