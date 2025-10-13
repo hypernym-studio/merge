@@ -28,7 +28,7 @@
 - API-Friendly
 
 <blockquote>
-  <sub><strong>Package size</strong>: <code>~560 B</code> minified, <code>~370 B</code> gzip</sub>
+  <sub><strong>Package size</strong>: <code>~553 B</code> minified, <code>~361 B</code> gzip</sub>
 </blockquote>
 
 ## Core Concepts
@@ -337,12 +337,6 @@ In most cases, you won't need to change this.
 ```ts
 const resultDepth = merge([A, B], { depth: 3 })
 ```
-
-## Community
-
-Feel free to ask questions or share new ideas.
-
-Use the official [discussions](https://github.com/hypernym-studio/merge/discussions) to get involved.
 
 ## License
 
