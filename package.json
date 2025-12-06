@@ -55,15 +55,15 @@
     }
   },
   "devDependencies": {
-    "@hypernym/bundler": "^0.30.4",
-    "@hypernym/eslint-config": "^3.6.4",
-    "@hypernym/prettier-config": "^3.2.7",
-    "@hypernym/tsconfig": "^2.6.2",
-    "@hypernym/utils": "^3.4.5",
-    "@types/node": "^24.7.2",
-    "eslint": "^9.37.0",
-    "prettier": "^3.6.2",
+    "@hypernym/bundler": "^0.30.6",
+    "@hypernym/eslint-config": "^3.6.6",
+    "@hypernym/prettier-config": "^3.2.10",
+    "@hypernym/tsconfig": "^2.6.4",
+    "@hypernym/utils": "^3.4.6",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.15"
   }
 }
