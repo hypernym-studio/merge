@@ -1,5 +1,4 @@
 {
-  "editor.defaultFormatter": "prettier.prettier-vscode",
-  "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "typescript"]
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true
 }
