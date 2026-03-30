@@ -41,6 +41,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "test": "vitest -c test/vitest.config.ts",
+    "generate:changelog": "hyperchangelog",
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
@@ -56,14 +57,15 @@
     }
   },
   "devDependencies": {
-    "@hypernym/bundler": "^0.32.0",
+    "@hypernym/bundler": "^0.32.1",
+    "@hypernym/changelog": "^0.1.1",
     "@hypernym/oxlint-config": "^0.1.0",
     "@hypernym/tsconfig": "^2.7.0",
     "@hypernym/utils": "^3.4.8",
-    "@types/node": "^25.3.3",
-    "oxfmt": "^0.36.0",
-    "oxlint": "^1.51.0",
+    "@types/node": "^25.5.0",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.2"
   }
 }
